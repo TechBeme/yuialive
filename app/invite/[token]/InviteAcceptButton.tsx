@@ -6,6 +6,7 @@ import { CheckCircle } from 'lucide-react';
 import { COLORS } from '@/lib/theme';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { translateApiError } from '@/lib/i18n';
 
 interface InviteAcceptButtonProps {
     token: string;
@@ -21,6 +22,7 @@ export default function InviteAcceptButton({ token }: InviteAcceptButtonProps) {
     const [accepted, setAccepted] = useState(false);
     const router = useRouter();
     const t = useTranslations('inviteAccept');
+    const tRoot = useTranslations(); // Para traduzir erros da API
 
     const handleAccept = async () => {
         try {
@@ -33,7 +35,8 @@ export default function InviteAcceptButton({ token }: InviteAcceptButtonProps) {
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || t('error'));
+                const errorMessage = translateApiError(tRoot, data.error);
+                throw new Error(errorMessage);
             }
 
             setAccepted(true);
