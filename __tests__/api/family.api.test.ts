@@ -566,6 +566,52 @@ describe('👨‍👩‍👧‍👦 Family API Tests', () => {
 
             expect(response.status).toBe(400);
         });
+
+        it('❌ Deve bloquear usuário com plano ativo de entrar na família', async () => {
+            mockAuthAuthenticated();
+
+            const cuidToken = 'clxxxxxxxxxxxxxxxxxxxxx';
+
+            (prisma.familyInvite.findUnique as jest.Mock).mockResolvedValue({
+                id: 'invite-1',
+                token: cuidToken,
+                familyId: 'family-1',
+                status: 'pending',
+                email: 'test@example.com',
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                usedBy: null,
+                family: {
+                    id: 'family-1',
+                    maxMembers: 5,
+                    members: [],
+                    owner: {
+                        id: 'owner-id',
+                        name: 'Owner',
+                    },
+                },
+            });
+
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: 'test-user-id-123',
+                email: 'test@example.com',
+            });
+
+            // Mock da transação que lança erro HAS_ACTIVE_PLAN
+            (prisma.$transaction as jest.Mock).mockImplementation(() => {
+                throw new Error('HAS_ACTIVE_PLAN');
+            });
+
+            const request = createPostRequest(
+                '/api/family/accept',
+                { token: cuidToken },
+                createAuthHeaders()
+            );
+            const response = await familyAccept(request);
+
+            expect(response.status).toBe(409);
+            const data = await extractJson(response);
+            expect(data.error).toBe('api.family.activePlan');
+        });
     });
 
     // ========================================
