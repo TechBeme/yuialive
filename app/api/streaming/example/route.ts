@@ -68,33 +68,34 @@ export async function POST(request: NextRequest) {
         // return NextResponse.json({ url: signedUrl });
 
         // For this example: return test videos from public URLs
+        // Updated URLs (Feb 2026) - Google Cloud Storage URLs were disabled
         const testVideos: Record<string, string> = {
-            // Fight Club (ID: 550)
-            '550': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            // Fight Club (ID: 550) - Big Buck Bunny from Blender Foundation
+            '550': 'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4',
 
-            // The Matrix (ID: 603)
-            '603': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            // The Matrix (ID: 603) - Sintel Trailer from W3C
+            '603': 'https://media.w3.org/2010/05/sintel/trailer.mp4',
 
-            // Inception (ID: 27205)
-            '27205': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            // Inception (ID: 27205) - Big Buck Bunny Trailer from W3C
+            '27205': 'https://media.w3.org/2010/05/bunny/trailer.mp4',
 
-            // Breaking Bad (ID: 1396)
-            '1396': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+            // Breaking Bad (ID: 1396) - Ocean sample from Video.js
+            '1396': 'https://vjs.zencdn.net/v/oceans.mp4',
 
-            // Game of Thrones (ID: 1399)
-            '1399': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            // Game of Thrones (ID: 1399) - Sintel Trailer (duplicate for testing)
+            '1399': 'https://media.w3.org/2010/05/sintel/trailer.mp4',
         };
 
         // Pegar vídeo específico ou usar Big Buck Bunny como padrão
         const baseVideoUrl = testVideos[body.tmdbId.toString()] || testVideos['550'];
 
-        // 6. Retornar apenas 1080p (resolução real dos vídeos de exemplo)
+        // Retornar qualidade disponível dos vídeos de exemplo
         // Na produção, você retornaria as qualidades disponíveis para cada vídeo
         const qualities = [
             { label: '1080p', url: baseVideoUrl, bitrate: 5000 },
         ];
 
-        // Qualidade padrão é 1080p (única disponível)
+        // Qualidade padrão (única disponível nos exemplos)
         const defaultQuality = '1080p';
 
         // Legendas de exemplo (VTT local - sem problemas de CORS)
